@@ -50,16 +50,19 @@ end
 ---@param color Color
 M.set_hl = function(name, color)
 	if color.link ~= nil then
-		vim.cmd('hi ' .. name .. ' guibg=none guifg=none')
-		vim.cmd('hi! link ' .. name .. ' ' .. color.link)
+		vim.api.nvim_set_hl(0, name, { link = color.link })
 		return
 	end
 
-	local bg = color.bg or 'none'
-	local fg = color.fg or 'none'
-	local gui = color.gui or 'none'
-
-	vim.cmd('hi default ' .. name .. ' guibg=' .. bg .. ' guifg=' .. fg .. ' gui=' .. gui)
+	local hl = {}
+	if color.bg and color.bg ~= 'none' then hl.bg = color.bg end
+	if color.fg and color.fg ~= 'none' then hl.fg = color.fg end
+	if color.gui and color.gui ~= 'none' then
+		for _, flag in ipairs(vim.split(color.gui, ',')) do
+			hl[flag] = true
+		end
+	end
+	vim.api.nvim_set_hl(0, name, hl)
 end
 
 M.get_fg = function(name, fallback)

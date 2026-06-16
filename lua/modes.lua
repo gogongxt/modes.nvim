@@ -132,13 +132,19 @@ end
 
 H.reset = function()
 	H.highlight('default')
-	vim.api.nvim_echo({}, false, {}) -- ensure mode-message highlight is updated
+	-- Defer echo to avoid "Press ENTER" prompt during startup
+	vim.schedule(function()
+		vim.api.nvim_echo({}, false, {}) -- ensure mode-message highlight is updated
+	end)
 end
 
 H.restore = function()
 	local scene = H.get_scene()
 	H.highlight(scene)
-	vim.api.nvim_echo({}, false, {})
+	-- Defer echo to avoid "Press ENTER" prompt during startup
+	vim.schedule(function()
+		vim.api.nvim_echo({}, false, {})
+	end)
 end
 
 ---@param scene 'default'|'copy'|'delete'|'change'|'format'|'insert'|'replace'|'select'|'visual'
@@ -292,25 +298,25 @@ H.define = function()
 
 	---Create highlight groups
 	if colors.copy ~= '' then
-		vim.cmd('hi ModesCopy guibg=' .. colors.copy)
+		vim.api.nvim_set_hl(0, 'ModesCopy', { bg = colors.copy })
 	end
 	if colors.delete ~= '' then
-		vim.cmd('hi ModesDelete guibg=' .. colors.delete)
+		vim.api.nvim_set_hl(0, 'ModesDelete', { bg = colors.delete })
 	end
 	if colors.change ~= '' then
-		vim.cmd('hi ModesChange guibg=' .. colors.change)
+		vim.api.nvim_set_hl(0, 'ModesChange', { bg = colors.change })
 	end
 	if colors.format ~= '' then
-		vim.cmd('hi ModesFormat guibg=' .. colors.format)
+		vim.api.nvim_set_hl(0, 'ModesFormat', { bg = colors.format })
 	end
 	if colors.insert ~= '' then
-		vim.cmd('hi ModesInsert guibg=' .. colors.insert)
+		vim.api.nvim_set_hl(0, 'ModesInsert', { bg = colors.insert })
 	end
 	if colors.replace ~= '' then
-		vim.cmd('hi ModesReplace guibg=' .. colors.replace)
+		vim.api.nvim_set_hl(0, 'ModesReplace', { bg = colors.replace })
 	end
 	if colors.visual ~= '' then
-		vim.cmd('hi ModesVisual guibg=' .. colors.visual)
+		vim.api.nvim_set_hl(0, 'ModesVisual', { bg = colors.visual })
 	end
 
 	local default_cursor = utils.get_bg('Cursor', '#524f67')
@@ -318,10 +324,10 @@ H.define = function()
 
 	local default_cursorline = utils.get_bg('CursorLine', '#26233a')
 	if config.set_number then
-		vim.cmd('hi CursorLineNr guibg=' .. default_cursorline)
+		vim.api.nvim_set_hl(0, 'CursorLineNr', { bg = default_cursorline })
 	end
 	if config.set_signcolumn then
-		vim.cmd('hi CursorLineSign guibg=' .. default_cursorline)
+		vim.api.nvim_set_hl(0, 'CursorLineSign', { bg = default_cursorline })
 	end
 
 	local line_nr_gui = utils.get_gui('CursorLineNr', 'none')
